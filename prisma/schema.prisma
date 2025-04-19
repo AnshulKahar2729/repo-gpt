@@ -25,7 +25,30 @@ model User {
   updatedAt     DateTime  @updatedAt
   accounts      Account[]
   sessions      Session[]
+  projects      Project[]
 }
+
+model Project {
+  id        String    @id @default(uuid())
+  repoUrl   String
+  name      String
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages  Message[]
+  createdAt DateTime  @default(now())
+
+  @@unique([repoUrl, userId])
+}
+
+model Message {
+  id         String   @id @default(uuid())
+  projectId  String
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userInput  String
+  response   String
+  createdAt  DateTime @default(now())
+}
+
 
 model Account {
   id                String  @id @default(uuid())

@@ -44,6 +44,7 @@ const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
+        console.log({user})
         token.id = user.id;
       }
       return token;
