@@ -24,7 +24,8 @@ export async function POST(req: NextRequest) {
 
   const repoName = repoUrl.split('/').slice(-1)[0]
 
-  await prisma.project.upsert({
+  // Create or update the project in the database
+  const project = await prisma.project.upsert({
     where: {
       repoUrl_userId: {
         repoUrl,
@@ -40,7 +41,8 @@ export async function POST(req: NextRequest) {
   })
 
 
-  const files = await cloneRepoAndGetFiles(repoUrl)
+  // Pass userId and projectId to the clone function
+  const files = await cloneRepoAndGetFiles(repoUrl, user.id, project.id)
   const usefulFiles = filterUsefulFiles(files)
 
   const allChunks = []
