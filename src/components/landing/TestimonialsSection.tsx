@@ -54,11 +54,10 @@ export default function TestimonialsSection() {
             >
               {/* Quote mark */}
               <div className="absolute top-6 right-6 text-6xl text-primary-200 dark:text-primary-900 font-serif">
-                "
               </div>
               
               <p className="text-gray-700 dark:text-gray-300 mb-6 relative z-10">
-                "{testimonial.quote}"
+                {testimonial.quote}
               </p>
               
               <div className="flex items-center">

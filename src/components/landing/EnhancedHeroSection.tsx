@@ -3,7 +3,6 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 
 export default function EnhancedHeroSection() {
   const router = useRouter();
@@ -84,11 +83,11 @@ export default function EnhancedHeroSection() {
                   <div className="ml-2 text-sm text-gray-600 dark:text-gray-300 font-mono">repository-analysis.js</div>
                 </div>
                 <div className="p-4 font-mono text-sm text-gray-700 dark:text-gray-300">
-                  <div className="text-blue-600 dark:text-blue-400">// RepoGPT analyzing repository structure</div>
+                  <div className="text-blue-600 dark:text-blue-400">{/* // RepoGPT analyzing repository structure */}</div>
                   <div className="mt-2"><span className="text-purple-600 dark:text-purple-400">const</span> <span className="text-green-600 dark:text-green-400">analysis</span> = <span className="text-purple-600 dark:text-purple-400">await</span> repoGPT.analyze(repository);</div>
                   <div className="mt-2"><span className="text-purple-600 dark:text-purple-400">const</span> <span className="text-green-600 dark:text-green-400">insights</span> = analysis.getInsights();</div>
                   <div className="mt-2"><span className="text-purple-600 dark:text-purple-400">const</span> <span className="text-green-600 dark:text-green-400">optimizations</span> = analysis.suggestOptimizations();</div>
-                  <div className="mt-4 text-blue-600 dark:text-blue-400">// Generate documentation</div>
+                  <div className="mt-4 text-blue-600 dark:text-blue-400">{/* // Generate documentation */}</div>
                   <div className="mt-2"><span className="text-purple-600 dark:text-purple-400">const</span> <span className="text-green-600 dark:text-green-400">docs</span> = <span className="text-purple-600 dark:text-purple-400">await</span> repoGPT.generateDocs(repository);</div>
                 </div>
               </div>

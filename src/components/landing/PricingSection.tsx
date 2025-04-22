@@ -68,7 +68,7 @@ const PricingCard = ({
         </Button>
         
         <div className="mt-8">
-          <h4 className="font-semibold text-gray-900 dark:text-white mb-4">What's included:</h4>
+          <h4 className="font-semibold text-gray-900 dark:text-white mb-4">Whats included:</h4>
           <ul className="space-y-3">
             {features.map((feature: string, index: number) => (
               <li key={index} className="flex items-start">
@@ -160,7 +160,7 @@ export default function PricingSection() {
             Simple, Transparent Pricing
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Choose the plan that's right for you and start optimizing your repositories today
+            Choose the plan that is right for you and start optimizing your repositories today
           </p>
         </motion.div>
 
