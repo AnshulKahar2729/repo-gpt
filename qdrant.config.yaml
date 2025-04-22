@@ -1,0 +1,21 @@
+########################
+# HTTP server settings #
+########################
+server:
+  host: "0.0.0.0"
+  port: 6333
+  cors:
+    allowed_origins: ["*"]
+
+####################
+# Storage settings #
+####################
+storage:
+  # Storage persistence path
+  storage_path: "./qdrant_storage"
+  # If true - point's payload will not be stored in memory
+  # It will be read from the disk every time it is requested
+  # This setting saves RAM by (slightly) increasing CPU usage
+  on_disk_payload: true
+  # Maximum number of concurrent updates to the storage
+  update_concurrency: 4

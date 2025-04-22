@@ -1,56 +1,78 @@
-import { ChromaClient } from 'chromadb'
+import { QdrantClient } from '@qdrant/js-client-rest'
 import { Chunk } from './types'
 
-const client = new ChromaClient({
-  path : process.env.CHROMA_URL!,
-  
+const client = new QdrantClient({
+  url: process.env.QDRANT_URL!,
+  apiKey : process.env.QDRANT_API_KEY!
 })
 const collectionName = 'repos'
 
 export async function storeChunksInVectorDB(repoUrl: string, chunks: Chunk[]) {
-  const collection = await client.getOrCreateCollection({
-    name: collectionName,
-    metadata: { description: 'Repo chunks collection' }
-  })
-
-  for (const chunk of chunks) {
-    await collection.add({
-      ids: [`${repoUrl}-${chunk.chunk_id}`],
-      documents: [chunk.code],
-      embeddings: [chunk.embedding || []],
-      metadatas: [{
-        repo: repoUrl,
-        file: chunk.file,
-        name: chunk.name || '',
-        type: chunk.type || ''
-      }]
+  // Check if collection exists, if not create it
+  try {
+    await client.getCollection(collectionName)
+  } catch (e) {
+    // Collection doesn't exist, create it
+    await client.createCollection(collectionName, {
+      vectors: {
+        size: chunks[0]?.embedding?.length || 1536, // Use the dimension of the first chunk or default to 1536
+        distance: 'Cosine'
+      }
     })
+  }
+
+  // Batch points for insertion
+  const points = chunks.map(chunk => ({
+    id: `${repoUrl}-${chunk.chunk_id}`,
+    vector: chunk.embedding || [],
+    payload: {
+      repo: repoUrl,
+      file: chunk.file,
+      name: chunk.name || '',
+      type: chunk.type || '',
+      code: chunk.code
+    }
+  }))
+
+  // Insert points in batches
+  if (points.length > 0) {
+   const result = await client.upsert(collectionName, {
+      points
+    })
+    console.log('Inserted chunks into Qdrant:', result)
+  } else{
+    console.log('No chunks to store in Qdrant')
   }
 }
 
 export async function searchRelevantChunks(repoUrl: string, queryEmbedding: number[]) {
-  const collection = await client.getOrCreateCollection({ name: collectionName })
+  try {
+    const results = await client.search(collectionName, {
+      vector: queryEmbedding,
+      limit: 5,
+      filter: {
+        must: [
+          {
+            key: 'repo',
+            match: {
+              value: repoUrl
+            }
+          }
+        ]
+      }
+    })
 
-  const results = await collection.query({
-    queryEmbeddings: [queryEmbedding],
-    nResults: 5,
-    where: { repo: repoUrl }
-  })
+    if (!results || results.length === 0) return []
 
-  if (!results.documents?.[0]) return []
-
-  return results.documents[0].map((code, idx): Chunk => ({
-    code: typeof code === 'string' ? code : '',
-    name: typeof results.metadatas?.[0]?.[idx]?.name === 'string'
-      ? results.metadatas?.[0]?.[idx]?.name
-      : '',
-    file: typeof results.metadatas?.[0]?.[idx]?.file === 'string'
-      ? results.metadatas?.[0]?.[idx]?.file
-      : '',
-    type: typeof results.metadatas?.[0]?.[idx]?.type === 'string'
-      ? results.metadatas?.[0]?.[idx]?.type
-      : '',
-    chunk_id: idx
-  }))
-
+    return results.map((result, idx): Chunk => ({
+      code: typeof result.payload?.code === 'string' ? result.payload.code : '',
+      name: typeof result.payload?.name === 'string' ? result.payload.name : '',
+      file: typeof result.payload?.file === 'string' ? result.payload.file : '',
+      type: typeof result.payload?.type === 'string' ? result.payload.type : '',
+      chunk_id: idx
+    }))
+  } catch (error) {
+    console.error('Error searching in Qdrant:', error)
+    return []
+  }
 }
