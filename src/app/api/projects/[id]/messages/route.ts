@@ -4,9 +4,9 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const projectId = params.id;
+  const { id: projectId } = await params;
 
   // Get user from token
   const token = req.cookies.get('token')?.value;

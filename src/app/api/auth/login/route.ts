@@ -25,6 +25,8 @@ export async function POST(req: NextRequest) {
     response.cookies.set('token', token, { httpOnly: true, path: '/', maxAge: 60 * 60 * 24 * 7 });
     return response;
   } catch (error) {
+    // Either remove the parameter completely or use it
+    console.error('Login error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

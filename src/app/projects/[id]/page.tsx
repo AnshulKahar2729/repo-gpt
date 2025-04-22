@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useParams } from "next/navigation";
 import { useUserStore } from "@/store/user";
 
@@ -12,15 +12,14 @@ interface Message {
 
 export default function ProjectPage() {
   const { id } = useParams();
-  const { user } = useUserStore();
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [input, setInput] = useState("");
-  const [project, setProject] = useState<any>(null);
+  const [project, setProject] = useState<{ id: string; name: string; repoUrl: string } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const fetchMessages = async () => {
+  const fetchMessages = useCallback(async () => {
     try {
       setLoading(true);
       const res = await fetch(`/api/projects/${id}/messages`);
@@ -32,7 +31,7 @@ export default function ProjectPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,7 +42,7 @@ export default function ProjectPage() {
       const res = await fetch('/api/query', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ repoUrl: project.repoUrl, query: input })
+        body: JSON.stringify({ repoUrl: project?.repoUrl, query: input })
       });
 
       if (!res.ok) {
@@ -75,7 +74,7 @@ export default function ProjectPage() {
     if (id) {
       fetchMessages();
     }
-  }, [id]);
+  }, [id, fetchMessages]);
 
   useEffect(() => {
     // Scroll to bottom when messages change

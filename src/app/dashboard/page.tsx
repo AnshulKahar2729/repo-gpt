@@ -1,13 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { fetchProfile } from "@/utils/api";
 import { useUserStore } from "@/store/user";
 import Link from "next/link";
 
 export default function DashboardPage() {
-  const { user, setUser } = useUserStore();
-  const router = useRouter();
+  const { user } = useUserStore();
 
   // useEffect(() => {
   //   async function load() {
@@ -21,7 +18,7 @@ export default function DashboardPage() {
   //   load();
   //   // eslint-disable-next-line
   // }, []);
-  const [repos, setRepos] = useState<any[]>([])
+  const [repos, setRepos] = useState<{ id: string; name: string; repoUrl: string }[]>([])
   const [url, setUrl] = useState('')
   const [loading, setLoading] = useState(true)
 

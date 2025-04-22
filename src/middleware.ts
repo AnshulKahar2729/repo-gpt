@@ -9,7 +9,7 @@ async function verifyJWT(token: string, secret: string) {
   try {
     await jwtVerify(token, secretKey);
     return true;
-  } catch (err) {
+  } catch (err : any) {
     return false;
   }
 }

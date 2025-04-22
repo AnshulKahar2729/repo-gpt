@@ -11,7 +11,7 @@ export default function useAuth() {
       try {
         const user = await fetchProfile();
         setUser(user);
-      } catch (err) {
+      } catch (err : any) {
         setUser(null);
       }
     }

@@ -16,6 +16,9 @@
 # testing
 /coverage
 
+# repos
+/repos
+
 # next.js
 /.next/
 /out/

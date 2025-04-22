@@ -11,7 +11,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const user = await fetchProfile();
         setUser(user);
-      } catch (err) {
+      } catch (err : any) {
         setUser(null);
       }
     }

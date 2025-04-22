@@ -24,6 +24,7 @@ export async function POST(req: NextRequest) {
     });
     return NextResponse.json({ id: user.id, email: user.email, name: user.name });
   } catch (error) {
+    console.error('Registration error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
