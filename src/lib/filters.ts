@@ -10,6 +10,24 @@ const ignoredPatterns = [
     '__tests__',
     '.png',
     '.jpg',
+    '.jpeg',
+    '.gif',
+    '.svg',
+    '.ico',
+    '.webp',
+    '.bmp',
+    '.tiff',
+    '.ttf',
+    '.woff',
+    '.woff2',
+    '.eot',
+    '.otf',
+    '.mp3',
+    '.mp4',
+    '.webm',
+    '.wav',
+    '.ogg',
+    '.pdf',
     '.exe',
     '.zip'
   ]
@@ -20,4 +38,3 @@ const ignoredPatterns = [
       return !ignoredPatterns.some(pattern => path.includes(pattern))
     })
   }
-  

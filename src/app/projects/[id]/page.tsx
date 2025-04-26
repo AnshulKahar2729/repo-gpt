@@ -1,7 +1,8 @@
 "use client";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useParams } from "next/navigation";
-import { useUserStore } from "@/store/user";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface Message {
   id: string;
@@ -114,7 +115,11 @@ export default function ProjectPage() {
                 <div className="flex items-start justify-end">
                   <div className="bg-gray-100 dark:bg-gray-800 p-3 rounded-lg max-w-[80%]">
                     <p className="text-sm font-semibold mb-1">System</p>
-                    <p className="whitespace-pre-wrap">{message.response}</p>
+                    <div className="markdown-content">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {message.response}
+                      </ReactMarkdown>
+                    </div>
                   </div>
                 </div>
               </div>

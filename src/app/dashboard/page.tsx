@@ -21,6 +21,7 @@ export default function DashboardPage() {
   const [repos, setRepos] = useState<{ id: string; name: string; repoUrl: string }[]>([])
   const [url, setUrl] = useState('')
   const [loading, setLoading] = useState(true)
+  const [deleting, setDeleting] = useState<string | null>(null)
 
   const fetchProjects = async () => {
     setLoading(true)
@@ -39,6 +40,31 @@ export default function DashboardPage() {
     setUrl('')
     fetchProjects()
   }
+
+  const deleteProject = async (id: string, e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent navigation to project page
+    e.stopPropagation(); // Prevent event bubbling
+    
+    setDeleting(id);
+    
+    try {
+      const res = await fetch(`/api/projects/${id}`, {
+        method: 'DELETE',
+      });
+      
+      if (res.ok) {
+        // Remove the project from the local state
+        setRepos(repos.filter(repo => repo.id !== id));
+      } else {
+        const data = await res.json();
+        console.error(`Failed to delete project: ${data.error || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Error deleting project:', error);
+    } finally {
+      setDeleting(null);
+    }
+  };
 
   useEffect(() => { fetchProjects() }, [])
 
@@ -89,7 +115,21 @@ export default function DashboardPage() {
               >
                 <h3 className="font-semibold text-lg mb-2">{repo.name}</h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{repo.repoUrl}</p>
-                <div className="mt-4 flex justify-end">
+                <div className="mt-4 flex justify-between items-center">
+                  <button
+                    onClick={(e) => deleteProject(repo.id, e)}
+                    className="text-red-500 hover:text-red-700 text-sm flex items-center"
+                    disabled={deleting === repo.id}
+                  >
+                    {deleting === repo.id ? (
+                      <span className="flex items-center">
+                        <span className="animate-spin h-4 w-4 mr-1 border-b-2 border-red-500 rounded-full"></span>
+                        Deleting...
+                      </span>
+                    ) : (
+                      <span>Delete</span>
+                    )}
+                  </button>
                   <span className="text-blue-500 text-sm">View project →</span>
                 </div>
               </Link>

@@ -1,78 +1,150 @@
-import { QdrantClient } from '@qdrant/js-client-rest'
+import { Pinecone } from '@pinecone-database/pinecone'
 import { Chunk } from './types'
 
-const client = new QdrantClient({
-  url: process.env.QDRANT_URL!,
-  apiKey : process.env.QDRANT_API_KEY!
+const pinecone = new Pinecone({
+  apiKey: process.env.PINECONE_API_KEY!
 })
-const collectionName = 'repos'
+const indexName = 'repos'
+
+/**
+ * Ensures that the Pinecone index exists, creating it if necessary
+ * @param dimension - The dimension of the vectors to store (default: 768 for Gemini embeddings)
+ */
+async function ensureIndexExists(dimension: number = 768): Promise<void> {
+  try {
+    console.log(`[VECTOR] Checking if index '${indexName}' exists`);
+    
+    // List all indexes
+    const indexes = await pinecone.listIndexes();
+    // Check if the index exists in the list
+    const indexExists = indexes.indexes?.some((index: { name: string }) => index.name === indexName) || false;
+    
+    if (!indexExists) {
+      console.log(`[VECTOR] Index '${indexName}' does not exist, creating it...`);
+      
+      // Create the index with the specified dimension
+      await pinecone.createIndex({
+        name: indexName,
+        dimension: dimension,
+        metric: 'cosine',
+        spec: {
+          serverless: {
+            cloud: 'aws',
+            region: 'us-west-2'
+          }
+        }
+      });
+      
+      console.log(`[VECTOR] Index '${indexName}' created successfully`);
+      
+      // Wait for the index to be ready
+      console.log(`[VECTOR] Waiting for index to be ready...`);
+      let isReady = false;
+      let attempts = 0;
+      const maxAttempts = 10;
+      
+      while (!isReady && attempts < maxAttempts) {
+        attempts++;
+        await new Promise(resolve => setTimeout(resolve, 5000)); // Wait 5 seconds
+        
+        try {
+          const indexDescription = await pinecone.describeIndex(indexName);
+          if (indexDescription.status?.ready) {
+            isReady = true;
+            console.log(`[VECTOR] Index is now ready`);
+          } else {
+            console.log(`[VECTOR] Index not ready yet, waiting... (Attempt ${attempts}/${maxAttempts})`);
+          }
+        } catch (error) {
+          console.log(`[VECTOR] Error checking index status: ${error}`);
+        }
+      }
+      
+      if (!isReady) {
+        throw new Error(`Index did not become ready after ${maxAttempts} attempts`);
+      }
+    } else {
+      console.log(`[VECTOR] Index '${indexName}' already exists`);
+    }
+  } catch (error) {
+    console.error(`[VECTOR] Error ensuring index exists:`, error);
+    throw error;
+  }
+}
 
 export async function storeChunksInVectorDB(repoUrl: string, chunks: Chunk[]) {
-  // Check if collection exists, if not create it
   try {
-    await client.getCollection(collectionName)
-  } catch (e) {
-    // Collection doesn't exist, create it
-    await client.createCollection(collectionName, {
-      vectors: {
-        size: chunks[0]?.embedding?.length || 1536, // Use the dimension of the first chunk or default to 1536
-        distance: 'Cosine'
+    // Ensure the index exists before trying to use it
+    const dimension = chunks[0]?.embedding?.length || 768;
+    await ensureIndexExists(dimension);
+    
+    // Get the index
+    const index = pinecone.index(indexName);
+    
+    // Prepare records for upsert
+    const records = chunks.map(chunk => ({
+      id: `${repoUrl}-${chunk.chunk_id}`,
+      values: chunk.embedding || [],
+      metadata: {
+        repo: repoUrl,
+        file: chunk.file,
+        name: chunk.name || '',
+        type: chunk.type || '',
+        code: chunk.code
       }
-    })
-  }
+    }));
 
-  // Batch points for insertion
-  const points = chunks.map(chunk => ({
-    id: `${repoUrl}-${chunk.chunk_id}`,
-    vector: chunk.embedding || [],
-    payload: {
-      repo: repoUrl,
-      file: chunk.file,
-      name: chunk.name || '',
-      type: chunk.type || '',
-      code: chunk.code
+    // Insert records in batches
+    if (records.length > 0) {
+      try {
+        console.log(`[VECTOR] Upserting ${records.length} records to Pinecone`);
+        const result = await index.upsert(records);
+        console.log(`[VECTOR] Inserted chunks into Pinecone:`, result);
+      } catch (error) {
+        console.error(`[VECTOR] Error inserting chunks into Pinecone:`, error);
+        throw error;
+      }
+    } else {
+      console.log('[VECTOR] No chunks to store in Pinecone');
     }
-  }))
-
-  // Insert points in batches
-  if (points.length > 0) {
-   const result = await client.upsert(collectionName, {
-      points
-    })
-    console.log('Inserted chunks into Qdrant:', result)
-  } else{
-    console.log('No chunks to store in Qdrant')
+  } catch (error) {
+    console.error(`[VECTOR] Error in storeChunksInVectorDB:`, error);
+    throw error;
   }
 }
 
 export async function searchRelevantChunks(repoUrl: string, queryEmbedding: number[]) {
   try {
-    const results = await client.search(collectionName, {
+    // Ensure the index exists before trying to use it
+    await ensureIndexExists(queryEmbedding.length);
+    
+    const index = pinecone.index(indexName);
+    
+    console.log(`[VECTOR] Searching for relevant chunks in repo: ${repoUrl}`);
+    const results = await index.query({
       vector: queryEmbedding,
-      limit: 5,
+      topK: 5,
       filter: {
-        must: [
-          {
-            key: 'repo',
-            match: {
-              value: repoUrl
-            }
-          }
-        ]
-      }
-    })
+        repo: repoUrl
+      },
+      includeMetadata: true
+    });
 
-    if (!results || results.length === 0) return []
+    if (!results.matches || results.matches.length === 0) {
+      console.log(`[VECTOR] No matches found for query in repo: ${repoUrl}`);
+      return [];
+    }
 
-    return results.map((result, idx): Chunk => ({
-      code: typeof result.payload?.code === 'string' ? result.payload.code : '',
-      name: typeof result.payload?.name === 'string' ? result.payload.name : '',
-      file: typeof result.payload?.file === 'string' ? result.payload.file : '',
-      type: typeof result.payload?.type === 'string' ? result.payload.type : '',
+    console.log(`[VECTOR] Found ${results.matches.length} matches for query`);
+    return results.matches.map((match, idx): Chunk => ({
+      code: typeof match.metadata?.code === 'string' ? match.metadata.code : '',
+      name: typeof match.metadata?.name === 'string' ? match.metadata.name : '',
+      file: typeof match.metadata?.file === 'string' ? match.metadata.file : '',
+      type: typeof match.metadata?.type === 'string' ? match.metadata.type : '',
       chunk_id: idx
-    }))
+    }));
   } catch (error) {
-    console.error('Error searching in Qdrant:', error)
-    return []
+    console.error(`[VECTOR] Error searching in Pinecone:`, error);
+    return [];
   }
 }
