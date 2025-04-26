@@ -11,10 +11,10 @@ const indexName = 'repos'
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   // Get the project ID from the URL params
-  const projectId = params.id;
+  const projectId = (await params).id;
 
   // Get user from token
   const token = req.cookies.get('token')?.value;
