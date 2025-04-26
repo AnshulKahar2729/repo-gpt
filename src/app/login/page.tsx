@@ -49,7 +49,7 @@ export default function LoginPage() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-block">
             <div className="flex items-center justify-center">
-              <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl mr-3 flex items-center justify-center shadow-lg">
+              <div className="w-12 h-12 bg-blue-200 rounded-xl mr-3 flex items-center justify-center shadow-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
                 </svg>
@@ -66,13 +66,6 @@ export default function LoginPage() {
           <div className="p-8">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 text-center">Welcome Back</h1>
             <p className="text-center text-gray-600 dark:text-gray-400 mb-6">Sign in to your account to continue</p>
-            
-            <div className="space-y-4 mb-6">
-              <Button variant="outline" className="w-full py-6 flex items-center justify-center gap-2 border-gray-300 dark:border-gray-600">
-                <Github size={18} />
-                <span>Continue with GitHub</span>
-              </Button>
-            </div>
             
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">

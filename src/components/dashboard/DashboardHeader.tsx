@@ -10,6 +10,7 @@ export default function DashboardHeader() {
 
   const handleLogout = () => {
     clearUser();
+    // remove the token from localStorage
     router.push("/login");
   };
 
