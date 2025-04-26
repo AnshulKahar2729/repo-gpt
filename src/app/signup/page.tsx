@@ -67,15 +67,6 @@ export default function SignupPage() {
           <div className="p-8">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 text-center">Create Your Account</h1>
             
-            <div className="relative my-6">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">Or sign up with email</span>
-              </div>
-            </div>
-            
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="name" className="text-gray-700 dark:text-gray-300 flex items-center gap-2">
@@ -144,7 +135,7 @@ export default function SignupPage() {
               
               <Button 
                 type="submit" 
-                className="w-full py-6 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors font-medium text-base"
+                className="w-full py-6 bg-blue-500 text-white rounded-lg transition-colors font-medium text-base"
                 disabled={isLoading}
               >
                 {isLoading ? (

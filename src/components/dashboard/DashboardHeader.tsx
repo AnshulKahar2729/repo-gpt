@@ -3,15 +3,23 @@ import { useUserStore } from "@/store/user";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
+import { logout } from "@/utils/api";
 
 export default function DashboardHeader() {
   const { user, clearUser } = useUserStore();
   const router = useRouter();
 
-  const handleLogout = () => {
-    clearUser();
-    // remove the token from localStorage
-    router.push("/login");
+  const handleLogout = async () => {
+    try {
+      // Call the logout API to clear the token cookie
+      await logout();
+      // Clear user state from store
+      clearUser();
+      // Redirect to login page
+      router.push("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
   return (

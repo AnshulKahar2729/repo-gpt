@@ -67,15 +67,6 @@ export default function LoginPage() {
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 text-center">Welcome Back</h1>
             <p className="text-center text-gray-600 dark:text-gray-400 mb-6">Sign in to your account to continue</p>
             
-            <div className="relative my-6">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">Or continue with</span>
-              </div>
-            </div>
-            
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-gray-700 dark:text-gray-300 flex items-center gap-2">
@@ -131,7 +122,7 @@ export default function LoginPage() {
               
               <Button 
                 type="submit" 
-                className="w-full py-6 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors font-medium text-base"
+                className="w-full py-6 bg-blue-500 text-white rounded-lg transition-colors font-medium text-base"
                 disabled={isLoading}
               >
                 {isLoading ? (

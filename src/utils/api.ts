@@ -23,3 +23,8 @@ export async function register(email: string, password: string, name?: string) {
   });
   return res.json();
 }
+
+export async function logout() {
+  const res = await fetch('/api/auth/logout');
+  return res.json();
+}
