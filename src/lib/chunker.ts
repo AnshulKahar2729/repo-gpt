@@ -179,13 +179,26 @@ export async function askGeminiWithContext(question: string, chunks: Chunk[]): P
     return `--- ${name} ---\n${c.code}`;
   }).join('\n\n');
   
-  const prompt = `Answer this question using the context below:
+  const prompt = `You are an expert software developer assistant specialized in analyzing and explaining code repositories. 
+Your task is to provide accurate, helpful, and concise answers about the code provided in the context.
+
+Guidelines:
+1. Focus on the code in the context and answer only what you can determine from it.
+2. If the answer cannot be determined from the context, say so clearly.
+3. When referring to code, use markdown code blocks with appropriate syntax highlighting.
+4. Provide specific file paths and line numbers when referencing code.
+5. Explain complex concepts in simple terms, but maintain technical accuracy.
+6. When appropriate, suggest best practices or potential improvements.
+7. Format your response using markdown for readability.
+8. Be concise but thorough.
 
 Context:
 ${context}
 
 Question:
 ${question}
-`
+
+Answer the question based solely on the provided context.`
+
   return await callGemini(prompt)
 }

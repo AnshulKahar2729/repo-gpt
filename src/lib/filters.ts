@@ -5,9 +5,7 @@ const ignoredPatterns = [
     'dist',
     '.env',
     'eslint.config.mjs',
-    
     'yarn.lock',
-    '__tests__',
     '.png',
     '.jpg',
     '.jpeg',
