@@ -1,36 +1,28 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+RepoInsight AI
+![image](https://github.com/user-attachments/assets/e113fa4b-889a-4c03-ad46-55d62640a03d)
 
-## Getting Started
 
-First, run the development server:
+🔍 GitHub Repository Analysis Tool
+RepoInsight AI is an intelligent tool that enables developers to analyze any GitHub repository through natural language queries. Simply enter a repository URL and ask questions about its code, architecture, dependencies, or functionality to receive instant, meaningful insights.
+Overview
+RepoInsight AI bridges the gap between complex codebases and human understanding by leveraging advanced AI to interpret and explain code structures. Whether you're evaluating a new library, onboarding to an unfamiliar project, or conducting code reviews, RepoInsight AI provides the clarity you need without manual code exploration.
+🚀 Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Universal Repository Analysis: Analyze any public GitHub repository with a simple URL input
+Natural Language Interface: Ask questions in plain English about any aspect of the codebase
+Comprehensive Code Understanding: Get insights about architecture, dependencies, patterns, and functionality
+Intelligent Dependency Analysis: Understand package relationships and version requirements
+Architectural Visualization: Generate high-level views of system components and their interactions
+Code Quality Assessment: Identify potential issues, anti-patterns, and improvement opportunities
+Customized Insights: Receive answers tailored to your specific questions and requirements
+Context-Aware Responses: AI maintains context between questions for more relevant follow-ups
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+🛠️ Technology Stack
+RepoInsight AI leverages cutting-edge technologies:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+GitHub API Integration: Efficiently fetches repository data, issues, and pull requests
+Advanced Code Parsing: Analyzes syntax trees and semantic structures across programming languages
+Vector Embeddings: Converts code into embeddings for semantic similarity search
+RAG (Retrieval-Augmented Generation): Enhances AI responses by retrieving relevant code context
+Chunking System: Intelligently segments codebases for comprehensive analysis
+Large Language Models: Powers natural language understanding and code interpretation
